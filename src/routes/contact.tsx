@@ -8,7 +8,7 @@ import { enquirySchema } from "@/lib/enquiry-schema";
 import { submitEnquiry } from "@/lib/enquiries.functions";
 
 export const Route = createFileRoute("/contact")({
-  validateSearch: (search: Record<string, unknown>) => ({ service: services.some(s => s.id === search.service) ? String(search.service) : undefined }),
+  validateSearch: (search: Record<string, unknown>): { service?: string } => ({ service: services.some(s => s.id === search["service"]) ? String(search["service"]) : undefined }),
   head: () => ({
     meta: [
       { title: "Contact — Zenmark" },
