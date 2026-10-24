@@ -1,18 +1,21 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { business, whatsappLink, type ServiceId } from "@/lib/business";
 import work1 from "@/assets/work-1.jpg";
 import work2 from "@/assets/work-2.jpg";
 import work3 from "@/assets/work-3.jpg";
 import work4 from "@/assets/work-4.jpg";
 
-export const BOOK_URL = "https://cal.com/dario-design/15m";
+export const BOOK_URL = whatsappLink();
 
 export const projects = [
-  { name: "Terrace", img: work1, tags: ["UX / UI Design", "Web Development"], year: "2025" },
-  { name: "Oakline", img: work2, tags: ["UX / UI Design", "Web Development"], year: "2025" },
-  { name: "Ambience", img: work3, tags: ["UX / UI Design", "Web Development"], year: "2024" },
-  { name: "ARQC", img: work4, tags: ["UX / UI Design", "Web Development"], year: "2024" },
+  { name: "Terrace", img: work1, tags: ["Concept example"], category: null as ServiceId | null, provenance: "Generated concept — not client work", video: undefined as string | undefined },
+  { name: "Oakline", img: work2, tags: ["Concept example"], category: null as ServiceId | null, provenance: "Generated concept — not client work", video: undefined as string | undefined },
+  { name: "Ambience", img: work3, tags: ["Concept example"], category: null as ServiceId | null, provenance: "Generated concept — not client work", video: undefined as string | undefined },
+  { name: "ARQC", img: work4, tags: ["Concept example"], category: null as ServiceId | null, provenance: "Generated concept — not client work", video: undefined as string | undefined },
 ];
 
 export function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
@@ -41,7 +44,7 @@ export function Reveal({ children, className = "", delay = 0 }: { children: Reac
 }
 
 export function Logo() {
-  return <span className="font-display text-4xl leading-none tracking-tight">DOVV</span>;
+  return <span className="font-display text-3xl uppercase leading-none">{business.name}</span>;
 }
 
 export function Header() {
@@ -59,12 +62,13 @@ export function Header() {
       <div className="mx-auto flex max-w-[1800px] items-center justify-between px-6 md:px-8">
         <Link to="/" aria-label="Home"><Logo /></Link>
         <nav className="flex items-center gap-2 md:gap-6">
-          <Link to="/work" className="hidden text-sm font-medium hover:opacity-60 sm:block" activeProps={{ className: "underline underline-offset-4" }}>
+          <Link to="/services" className="text-sm font-medium hover:opacity-60">Services</Link>
+          <Link to="/work" className="text-sm font-medium hover:opacity-60" activeProps={{ className: "underline underline-offset-4" }}>
             Work
           </Link>
           <Link
             to="/contact"
-            className="group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-transform hover:scale-105"
+            className="group inline-flex items-center gap-2 rounded-full bg-primary px-3 py-3 md:px-5 text-sm font-medium text-primary-foreground transition-transform hover:scale-105"
           >
             Contact <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
           </Link>
@@ -89,26 +93,29 @@ export function Footer() {
             <p className="opacity-60">Pages</p>
             <Link to="/" className="block hover:opacity-60">Home</Link>
             <Link to="/work" className="block hover:opacity-60">Work</Link>
+            <Link to="/services" className="block hover:opacity-60">Services</Link>
             <Link to="/contact" className="block hover:opacity-60">Contact</Link>
           </div>
           <div className="space-y-2 text-sm">
             <p className="opacity-60">Elsewhere</p>
             <a href="https://www.awwwards.com/sites/dovv-studio" target="_blank" rel="noreferrer" className="block hover:opacity-60">Awwwards</a>
-            <a href="https://www.instagram.com" target="_blank" rel="noreferrer" className="block hover:opacity-60">Instagram</a>
+            <a href={business.instagram} target="_blank" rel="noreferrer" className="block hover:opacity-60">Instagram</a>
+            <a href={whatsappLink()} target="_blank" rel="noreferrer" className="block hover:opacity-60">WhatsApp</a>
+            <a href={`mailto:${business.email}`} className="block break-all hover:opacity-60">{business.email}</a>
             <a href="https://www.linkedin.com" target="_blank" rel="noreferrer" className="block hover:opacity-60">LinkedIn</a>
           </div>
         </div>
-        <p className="mt-16 select-none text-center font-display text-[28vw] leading-[0.8] tracking-tighter">DOVV</p>
+        <p className="footer-wordmark mt-16 select-none text-center font-display uppercase leading-[0.8]">{business.name}</p>
         <div className="flex justify-between border-t border-primary-foreground/20 py-6 text-xs opacity-60">
-          <span>© {new Date().getFullYear()} DOVV Studio</span>
-          <span>Made in Argentina</span>
+          <span>© {new Date().getFullYear()} {business.name}</span>
+          <span>Design & motion</span>
         </div>
       </div>
     </footer>
   );
 }
 
-export function PillButton({ to, href, children, variant = "solid" }: { to?: "/" | "/work" | "/contact"; href?: string; children: ReactNode; variant?: "solid" | "outline" }) {
+export function PillButton({ to, href, children, variant = "solid" }: { to?: "/" | "/work" | "/contact" | "/services"; href?: string; children: ReactNode; variant?: "solid" | "outline" }) {
   const cls =
     variant === "solid"
       ? "bg-primary text-primary-foreground hover:scale-105"
@@ -121,11 +128,13 @@ export function PillButton({ to, href, children, variant = "solid" }: { to?: "/"
 export function ProjectCard({ p, i }: { p: (typeof projects)[number]; i: number }) {
   return (
     <Reveal delay={(i % 2) * 120}>
-      <Link to="/work" className="group block">
+      <Dialog>
+      <DialogTrigger asChild>
+      <Button variant="ghost" className="group block h-auto w-full whitespace-normal p-0 text-left hover:bg-transparent" aria-label={`View ${p.name} concept`}>
         <div className="overflow-hidden rounded-2xl bg-muted">
-          <img src={p.img} alt={`${p.name} website`} width={1280} height={896} loading="lazy" className="aspect-[10/7] w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <img src={p.img} alt={`${p.name}: generated website concept, not client work`} decoding="async" width={1280} height={896} loading="lazy" className="aspect-[10/7] w-full object-cover transition-transform duration-700 group-hover:scale-105" />
         </div>
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <h3 className="font-display text-3xl uppercase">{p.name}</h3>
           <div className="flex gap-2">
             {p.tags.map((t) => (
@@ -133,7 +142,16 @@ export function ProjectCard({ p, i }: { p: (typeof projects)[number]; i: number 
             ))}
           </div>
         </div>
-      </Link>
+        <p className="mt-2 text-sm text-muted-foreground">{p.provenance}</p>
+      </Button>
+      </DialogTrigger>
+      <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto">
+        <DialogTitle className="font-display text-4xl uppercase">{p.name}</DialogTitle>
+        <DialogDescription>{p.provenance}. This existing visual is retained as a concept example only.</DialogDescription>
+        {p.video ? <video src={p.video} controls playsInline preload="metadata" className="aspect-[10/7] w-full object-contain" /> : <img src={p.img} alt={`${p.name} generated concept in full`} width={1280} height={896} className="aspect-[10/7] w-full object-contain" />}
+        <PillButton to="/contact">Discuss your project</PillButton>
+      </DialogContent>
+      </Dialog>
     </Reveal>
   );
 }

@@ -79,8 +79,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "DOVV Studio" },
-      { name: "description", content: "Framer web design and development studio." },
+      { title: "Zenmark" },
+      { name: "description", content: "Zenmark graphic design and motion studio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -122,6 +122,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Header />
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <Outlet />
       <Footer />
     </QueryClientProvider>
